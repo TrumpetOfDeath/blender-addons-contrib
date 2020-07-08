@@ -732,12 +732,12 @@ class ExportJsx(bpy.types.Operator, ExportHelper):
             ],
             name="Anchor Point for Objects",
             description="Anchor Point for Objects",
-            default="DEFAULT",
+            default="CENTERED",
             )
     object_scale: FloatProperty(
         name="Object Scale",
         description="Scale factor for null objects",
-        default=1.0,
+        default=100.0,
     )
 #    include_ob_bundles = BoolProperty(
 #            name="Objects 3D Markers",
