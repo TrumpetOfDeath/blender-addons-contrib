@@ -240,7 +240,7 @@ def convert_lens(camera, width, height, aspect):
 
 
 # jsx script for AE creation
-def write_jsx_file(file, data, selection, include_animation, include_active_cam, include_selected_cams, include_selected_objects, include_cam_bundles, object_anchor_point_type):
+def write_jsx_file(file, data, selection, include_animation, include_active_cam, include_selected_cams, include_selected_objects, include_cam_bundles, object_anchor_point_type, object_scale):
 
     print("\n---------------------------\n- Export to After Effects -\n---------------------------")
     # store the current frame to restore it at the end of export
@@ -526,7 +526,7 @@ def write_jsx_file(file, data, selection, include_animation, include_active_cam,
                 # store all values in dico
                 position = '[%f,%f,%f],' % (ae_transform[0], ae_transform[1], ae_transform[2])
                 orientation = '[%f,%f,%f],' % (ae_transform[3], ae_transform[4], ae_transform[5])
-                scale = '[%f,%f,%f],' % (ae_transform[6], ae_transform[7], ae_transform[8])
+                scale = '[%f,%f,%f],' % (ae_transform[6] * object_scale, ae_transform[7] * object_scale, ae_transform[8] * object_scale)
                 js_data['nulls'][name_ae]['position'] += position
                 js_data['nulls'][name_ae]['orientation'] += orientation
                 js_data['nulls'][name_ae]['scale'] += scale
@@ -678,10 +678,10 @@ def write_jsx_file(file, data, selection, include_animation, include_active_cam,
 ##########################################
 
 
-def main(file, context, include_animation, include_active_cam, include_selected_cams, include_selected_objects, include_cam_bundles, object_anchor_point_type):
+def main(file, context, include_animation, include_active_cam, include_selected_cams, include_selected_objects, include_cam_bundles, object_anchor_point_type, object_scale):
     data = get_comp_data(context)
     selection = get_selected(context)
-    write_jsx_file(file, data, selection, include_animation, include_active_cam, include_selected_cams, include_selected_objects, include_cam_bundles, object_anchor_point_type)
+    write_jsx_file(file, data, selection, include_animation, include_active_cam, include_selected_cams, include_selected_objects, include_cam_bundles, object_anchor_point_type, object_scale)
     print ("\nExport to After Effects Completed")
     return {'FINISHED'}
 
@@ -690,7 +690,7 @@ def main(file, context, include_animation, include_active_cam, include_selected_
 ##########################################
 
 from bpy_extras.io_utils import ExportHelper
-from bpy.props import StringProperty, BoolProperty, EnumProperty
+from bpy.props import StringProperty, BoolProperty, EnumProperty, FloatProperty
 
 
 class ExportJsx(bpy.types.Operator, ExportHelper):
@@ -734,6 +734,11 @@ class ExportJsx(bpy.types.Operator, ExportHelper):
             description="Anchor Point for Objects",
             default="DEFAULT",
             )
+    object_scale: FloatProperty(
+        name="Object Scale",
+        description="Scale factor for null objects",
+        default=1.0,
+    )
 #    include_ob_bundles = BoolProperty(
 #            name="Objects 3D Markers",
 #            description="Include 3D Markers of Object Motion Solution for selected cameras",
@@ -753,6 +758,7 @@ class ExportJsx(bpy.types.Operator, ExportHelper):
         box.label(text="Include Tracking Data:")
         box.prop(self, 'include_cam_bundles')
         box.prop(self, 'object_anchor_point_type')
+        box.prop(self, 'object_scale')
 #        box.prop(self, 'include_ob_bundles')
 
     @classmethod
@@ -764,7 +770,7 @@ class ExportJsx(bpy.types.Operator, ExportHelper):
         return ok
 
     def execute(self, context):
-        return main(self.filepath, context, self.include_animation, self.include_active_cam, self.include_selected_cams, self.include_selected_objects, self.include_cam_bundles, self.object_anchor_point_type)
+        return main(self.filepath, context, self.include_animation, self.include_active_cam, self.include_selected_cams, self.include_selected_objects, self.include_cam_bundles, self.object_anchor_point_type, self.object_scale)
 
 
 def menu_func(self, context):
