@@ -730,12 +730,12 @@ class ExportJsx(bpy.types.Operator, ExportHelper):
                 ("DEFAULT", "Default", "Anchor point will be default (0,0,0)"),
                 ("CENTERED", "Centered", "Anchor point will be centered"),
             ],
-            name="Anchor Point for Objects",
+            name="",
             description="Anchor Point for Objects",
             default="CENTERED",
             )
     object_scale: FloatProperty(
-        name="Object Scale",
+        name="",
         description="Scale factor for null objects",
         default=100.0,
     )
@@ -757,7 +757,9 @@ class ExportJsx(bpy.types.Operator, ExportHelper):
         box.prop(self, 'include_selected_objects')
         box.label(text="Include Tracking Data:")
         box.prop(self, 'include_cam_bundles')
+        box.label(text='Anchor Point for Objects:')
         box.prop(self, 'object_anchor_point_type')
+        box.label(text='Object Scale:')
         box.prop(self, 'object_scale')
 #        box.prop(self, 'include_ob_bundles')
 
